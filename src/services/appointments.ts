@@ -1,99 +1,139 @@
 import { Op } from 'sequelize';
-import { Appointment } from '../models';
+import moment from 'moment';
+import { Appointment, Therapist, User } from '../models';
+import sequelize from '../db/connection';
 import { templateErrors } from '../helpers';
+import { AddAppointment, Appointment as AppointmentType, TimeRange } from '../types';
+import { HOUR_RANGE } from '../config/constants';
 
-export const getAppointmentsPerDateService = async (
+const getAppointmentsPerDateService = async (
   therapistId: string,
-  date: string,
+  date = 'today',
 ) => {
-  try {
-    const startDate = new Date(date);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(date);
-    endDate.setHours(23, 59, 59, 999);
-
-    const appointments = await Appointment.findAll({
-      where: {
-        therapistId,
-        datetime: {
-          [Op.between]: [startDate, endDate],
+  const isTherapistFound = await Therapist.findByPk(therapistId, {
+    include: [
+      {
+        model: User,
+        attributes: ['fullName', 'isActive', 'email'],
+        where: {
+          isActive: true,
         },
       },
-      order: [['datetime', 'ASC']],
+    ],
+  });
+  if (!isTherapistFound) {
+    throw templateErrors.BAD_REQUEST('therapist not found');
+  }
+  const appointments = await Appointment.findAll({
+    attributes: ['id', 'datetime', 'therapistId', 'isBooked', 'isAvailable'],
+    where: {
+      [Op.and]: [
+        { therapistId },
+        sequelize.where(sequelize.fn('date', sequelize.col('datetime')), date),
+      ],
+    },
+  });
+  return appointments;
+};
+
+const getAppointmentById = async (id: string) => {
+  const appointment = await Appointment.findByPk(id);
+  return appointment;
+};
+
+const updateIsAvailable = async (id: string, isAvailable: boolean) => {
+  const afterUpdate = await Appointment.update(
+    {
+      isAvailable: !isAvailable,
+    },
+    {
+      where: { id },
+    },
+  );
+  return afterUpdate;
+};
+/*
+  @Description This function generates appointments based on the given time ranges.
+  @param {AddAppointment} - The appointment data.
+  @returns {AppointmentType[]} - An array of appointments.
+  {AddAppointment} start - The start date. @type {string}
+  {AddAppointment} end - The end date. @type {string}
+  {AddAppointment} timeRanges - An array of time ranges. @type {TimeRange[]}
+  {AddAppointment} therapistId - The therapist id. @type {number}
+
+  ** all the times are in UTC format.
+
+  */
+const generateAppointments = (
+  {
+    start,
+    end,
+    timeRanges,
+    therapistId,
+  }: AddAppointment,
+): AppointmentType[] => {
+  const startDate = moment.utc(start, 'YYYY-MM-DD');
+  const endDate = moment.utc(end, 'YYYY-MM-DD');
+  const appointments: AppointmentType[] = [];
+
+  const currentDate = startDate.clone().startOf('day').utc();
+  /*
+    @Description This loop generates appointments for each day between the start and end date.
+    @Input The current date.
+    @returns {AppointmentType[]} - An array of appointments.
+  */
+  while (currentDate.isSameOrBefore(endDate, 'day')) {
+    const availableRanges = timeRanges.map((range) => {
+      const { from, to } = range;
+      const startTime = currentDate.clone().add(from, 'hours');
+      const endTime = currentDate.clone().add(to, 'hours');
+
+      if (endTime.isBefore(startTime)) { // handle the case when the end time is in the next day.
+        endTime.add(1, 'day');
+      }
+
+      return { startTime, endTime };
     });
 
-    return appointments;
-  } catch (error) {
-    throw templateErrors.INTERNAL_SERVER_ERROR('Error retrieving appointments');
+    availableRanges.forEach(({ startTime, endTime }) => {
+      const currentTime = startTime.clone();
+
+      while (currentTime.isBefore(endTime)) {
+        appointments.push({
+          therapistId,
+          datetime: currentTime.clone().toDate(),
+        });
+        currentTime.add(HOUR_RANGE);
+      }
+    });
+
+    currentDate.add(1, 'day');
   }
+
+  return appointments;
 };
 
-export const getAppointmentById = async (id: string) => {
-  try {
-    const appointment = await Appointment.findByPk(id);
-    return appointment;
-  } catch (error) {
-    throw templateErrors.INTERNAL_SERVER_ERROR('Error retrieving appointment');
-  }
-};
-
-export const updateIsAvailable = async (id: string, isAvailable: boolean) => {
-  try {
-    await Appointment.update(
-      { isAvailable: !isAvailable },
-      {
-        where: {
-          id,
-        },
-      },
-    );
-    return true;
-  } catch (error) {
-    throw templateErrors.INTERNAL_SERVER_ERROR('Error updating appointment');
-  }
-};
-
-export const addAppointment = async (
-  therapistId: number,
-  from: string,
-  to: string,
-  time: number,
+const addAppointment = async (
+  therapistId:number,
+  startDate:string,
+  endDate:string,
+  timeRanges:TimeRange[],
 ) => {
-  try {
-    const startDate = new Date(from);
-    const endDate = new Date(to);
-    
-    // Calculate the number of days between start and end dates
-    const dayDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (dayDiff <= 0) {
-      return [];
-    }
+  const appointments = generateAppointments(
+    {
+      start: startDate,
+      end: endDate,
+      timeRanges,
+      therapistId,
+    },
+  );
 
-    const appointments = [];
-    
-    // Create appointments for each day in the range
-    for (let i = 0; i <= dayDiff; i++) {
-      const currentDate = new Date(startDate);
-      currentDate.setDate(startDate.getDate() + i);
-      
-      // Set the appointment time
-      currentDate.setHours(time, 0, 0, 0);
-      
-      // Create the appointment
-      const appointment = await Appointment.create({
-        therapistId,
-        datetime: currentDate,
-        isBooked: false,
-        isAvailable: true,
-      });
-      
-      appointments.push(appointment);
-    }
-    
-    return appointments;
-  } catch (error) {
-    throw templateErrors.INTERNAL_SERVER_ERROR('Error creating appointments');
-  }
+  const appointment = await Appointment.bulkCreate(appointments, {
+    returning: true,
+  });
+  return appointment;
+};
+
+export {
+  getAppointmentsPerDateService, getAppointmentById, updateIsAvailable, addAppointment,
 };

@@ -5,10 +5,11 @@ import {
 import { IUser } from './user';
 
 import {
-  TherapistWithUserOptional, Imeeting, Appointment, TimeRange,
+  TherapistWithUserOptional, Imeeting, Appointment,
   AddAppointment, AppointmentWithTherapistOptional, TherapistAndUser, ITherapist,
   PriceFilter,
 } from './therapist';
+import { TimeRange } from './appointment';
 import { Payload, IPayload } from './payload';
 import {
   Decode, RequestWithUserRole, RolesForSelect, Roles,

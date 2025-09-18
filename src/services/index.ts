@@ -4,5 +4,6 @@ import { getTherapistById, getAllTherapist, updateTherapist } from './therapists
 
 export { loginByEmail, registerTherapist, registerUser, 
     getAdmin, getTherapistById, getAllTherapist, 
-    updateTherapist 
+    updateTherapist, getAppointmentsPerDateService, getAppointmentById
+  , updateIsAvailable, addAppointment,
 };

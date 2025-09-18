@@ -1,20 +1,11 @@
-import express from 'express';
-import { 
-  getAppointments, 
-  updateAvailable, 
-  addAppointment 
-} from '../controllers/appointments';
-import { checkAuth, checkTherapist } from '../middlewares';
+import { Router } from 'express';
+import { addAppointment, getAppointments, updateAvailable } from '../controllers';
+import { RolesForSelect } from '../types';
+import { checkAuth } from '../middlewares';
 
-const router = express.Router();
-
-// Get appointments by date for a therapist
-router.get('/therapist/:therapistId', getAppointments);
-
-// Update appointment availability (therapist only)
-router.patch('/:id', checkAuth, checkTherapist, updateAvailable);
-
-// Add new appointments (therapist only)
-router.post('/', checkAuth, checkTherapist, addAppointment);
+const router = Router();
+router.get('/:therapistId', getAppointments);
+router.put('/:id', checkAuth(RolesForSelect.therapist), updateAvailable);
+router.post('/', checkAuth(RolesForSelect.therapist), addAppointment);
 
 export default router;

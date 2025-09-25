@@ -1,7 +1,11 @@
 import {
   findTherapistById, getAllTherapists, updateTherapistProfile, updateProfileImg,
 } from './therapists';
+<<<<<<< HEAD
 import { getAppointments, updateAvailable, addAppointment } from './appointment';
+=======
+import { getAppointments, updateAvailable, addAppointment } from './appointments';
+>>>>>>> master
 import { login, getAuth, register } from './auth';
 import createSessionController from './session';
 import findClientSecret from './payment';

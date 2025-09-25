@@ -18,6 +18,15 @@ enum RolesForSelect {
   therapist = 'therapist',
 }
 
+<<<<<<< HEAD
 export {
   Decode, RequestWithUserRole, RolesForSelect, Roles,
+=======
+export type {
+  Decode, RequestWithUserRole, Roles,
+};
+
+export {
+  RolesForSelect,
+>>>>>>> master
 };

@@ -2,7 +2,11 @@ import { getTherapistById, getAllTherapist, updateTherapist } from './therapists
 import {
   getAppointmentsPerDateService, getAppointmentById, updateIsAvailable,
   addAppointment,
+<<<<<<< HEAD
 } from './appointment';
+=======
+} from './appointments';
+>>>>>>> master
 import { loginByEmail, registerTherapist, registerUser } from './auth';
 import getClientSecret from './payment';
 import bookAppointment from './session';

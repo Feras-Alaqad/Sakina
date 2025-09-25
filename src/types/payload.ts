@@ -13,4 +13,8 @@ interface IPayload {
   adminId?: number;
 }
 
+<<<<<<< HEAD
 export { Payload, IPayload };
+=======
+export type { Payload, IPayload };
+>>>>>>> master

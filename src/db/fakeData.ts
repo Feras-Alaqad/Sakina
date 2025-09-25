@@ -174,6 +174,11 @@ const Admins = [
     password: '$2a$12$.4gCFbhK7VUUAED3n8GKsOZy/1qyNdi3Fhjm7frapQaxbzRyWzvBa',
     role: 'admin',
   },
+  {
+    username: 'superadmin',
+    password: '$2b$12$vUQNVLEy24r9G1wNMl1TwOJwauxJIGV4T54mGyBfmoh3I8XMVNoYi', // password: admin123
+    role: 'admin',
+  },
 ];
 const Therapists = [
   {

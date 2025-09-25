@@ -57,11 +57,7 @@ interface ITherapist {
   phoneNumber: string;
 }
 
-<<<<<<< HEAD
-export {
-=======
 export type {
->>>>>>> master
   TherapistWithUserOptional, Imeeting, Appointment,
   TimeRange, AddAppointment, AppointmentWithTherapistOptional, TherapistAndUser, ITherapist,
   PriceFilter,

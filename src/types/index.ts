@@ -15,14 +15,6 @@ import {
 } from './checkauth';
 import IMailBuilder from './mail';
 
-<<<<<<< HEAD
-export {
-  UsersAttributes, TherapistAttributes, AppointmentsAttributes, AdminAttributes, SessionsAttributes,
-  TherapistWithUserOptional, Decode, RequestWithUserRole, RolesForSelect, Roles, Imeeting, IPayload,
-  Appointment, TimeRange, Payload, AddAppointment, AppointmentWithTherapistOptional,
-  TherapistAndUser, ITherapist, IUser, IMailBuilder, PriceFilter,
-};
-=======
 // Export types
 export type {
   UsersAttributes, TherapistAttributes, AppointmentsAttributes, AdminAttributes, SessionsAttributes,
@@ -35,4 +27,3 @@ export type {
 export {
   RolesForSelect,
 };
->>>>>>> master

@@ -10,7 +10,9 @@ const getAppointmentsPerDateService = async (
   therapistId: string,
   date = 'today',
 ) => {
-  const isTherapistFound = await Therapist.findByPk(therapistId, {
+  // Find therapist by userId (the therapistId parameter is actually userId)
+  const isTherapistFound = await Therapist.findOne({
+    where: { userId: therapistId },
     include: [
       {
         model: User,
@@ -21,8 +23,9 @@ const getAppointmentsPerDateService = async (
       },
     ],
   });
+  
   if (!isTherapistFound) {
-    throw templateErrors.BAD_REQUEST('therapist not found');
+    throw templateErrors.BAD_REQUEST('therapist not found or user is not active');
   }
   const appointments = await Appointment.findAll({
     attributes: ['id', 'datetime', 'therapistId', 'isBooked', 'isAvailable'],

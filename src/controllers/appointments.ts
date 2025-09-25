@@ -90,11 +90,18 @@ const addAppointment = async (
     const therapistId = userData?.therapistId as string;
     await addAppointmentSchema.validate({ date, time });
     const { from, to } : TimeRange = date;
+    
+    // Convert single time to timeRanges array
+    const timeRanges = [{
+      from: time.toString(),
+      to: (time + 1).toString()
+    }];
+    
     const data = await addAppointmentService(
       parseInt(therapistId, 10),
       from,
       to,
-      time,
+      timeRanges,
     );
     if (!data.length) {
       throw templateErrors.BAD_REQUEST('Invalid Range');

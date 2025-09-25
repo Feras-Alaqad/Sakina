@@ -62,10 +62,6 @@ InferCreationAttributes<SessionsAttributes>> {
 
 }
 
-<<<<<<< HEAD
-export {
-=======
 export type {
->>>>>>> master
   UsersAttributes, TherapistAttributes, AdminAttributes, AppointmentsAttributes, SessionsAttributes,
 };

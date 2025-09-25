@@ -8,8 +8,4 @@ interface IUser {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-<<<<<<< HEAD
-export { IUser };
-=======
 export type { IUser };
->>>>>>> master

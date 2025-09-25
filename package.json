@@ -31,11 +31,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
-<<<<<<< HEAD
-    "express-bearer-token": "^2.4.0",
-=======
     "express-bearer-token": "^3.0.0",
->>>>>>> master
     "google-auth-library": "^8.8.0",
     "googleapis": "^118.0.0",
     "is-ci": "^3.0.1",
@@ -68,11 +64,7 @@
     "eslint-plugin-import": "^2.27.5",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
-<<<<<<< HEAD
-    "nodemon": "^2.0.22",
-=======
     "nodemon": "^3.1.10",
->>>>>>> master
     "prettier": "^2.8.8",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
